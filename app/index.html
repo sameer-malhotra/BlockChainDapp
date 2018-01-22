@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hello World DApp</title>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+</head>
+<body>
+  <h1>HelloWorld</h1>
+  <label for="contractAdd">Contract Address:</label>
+  <input type="text" id="contractAdd" placeholder="contract address"  > </input>
+  <a href="#" onclick="App.createContract()" class="btn btn-primary">Create</a>
+  <br> <br>
+  <br><label for="balanceStatus">Balance Status:</label><input type="text" id="balanceStatus" placeholder="0"> </input>
+   <a href="#" onclick="App.getBalance()" class="btn btn-primary">Get</a>
+  <br> <br>
+  <label for="addAmountId">Add Money</label>
+  <input type="text" id="addAmountId" placeholder="Add amount"> </input>
+  <a href="#" onclick="App.addAmount()" class="btn btn-primary">add</a>
+    <br> <br>
+ 
+  <label for="secret">Secret:</label>
+  <input type="text" id="secret" placeholder="Secret"> </input>
+  <br> <br>
+  <label for="passPhrase">PassPhrase:</label>
+  <input type="text" id="passPhrase" placeholder="Pass Phrase"> </input>
+  <br> <br> 
+ 
+</body>
+  
+<script src="https://cdn.rawgit.com/ethereum/web3.js/develop/dist/web3.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
+<script src="./app.js"></script>
+</html>

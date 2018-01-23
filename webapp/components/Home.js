@@ -4,6 +4,7 @@ import {Grid, Row, Col} from 'react-flexbox-grid';
 import { Avatar, Chip, FlatButton, Subheader, TextField,
     SelectField, MenuItem, RaisedButton } from 'material-ui';
 import SkillColors from '../util/SkillColors';
+import { getEmployees } from '../util/BlockchainHelper';
 
 
 export default class Home extends React.Component {
@@ -111,6 +112,10 @@ export default class Home extends React.Component {
             selectedValues: {}
         }
         this.initializeSelectedValues();
+    }
+
+    componentWillMount() {
+        getEmployees();
     }
 
     initializeSelectedValues() {

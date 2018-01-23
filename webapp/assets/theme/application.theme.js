@@ -3,7 +3,7 @@ import {deepOrange600} from 'material-ui/styles/colors';
 
 export const overlayColor = deepOrange600;
 export const brandColor = '#873260';
-export const mainColor = '#FFFFFF';
+export const mainColor = '#2196F3';
 
 const muiTheme = getMuiTheme({
   palette: {

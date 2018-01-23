@@ -18,8 +18,10 @@ class Navbar extends React.Component {
     return (
       <div>
         <AppBar
-          title="Soup Maker"
+          title="Reputation Chain"
+          titleStyle={{margin: 'auto'}}
           className="navbar"
+          style={{backgroundColor: '#FFF'}}
           iconStyleLeft={this.styles.logo}
           iconElementLeft={<img style={{width: 50}} src={require('Images/logo.png')}/>}
         />

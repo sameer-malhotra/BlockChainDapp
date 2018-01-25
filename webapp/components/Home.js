@@ -4,7 +4,12 @@ import {Grid, Row, Col} from 'react-flexbox-grid';
 import { Avatar, Chip, FlatButton, Subheader, TextField,
     SelectField, MenuItem, RaisedButton } from 'material-ui';
 import SkillColors from '../util/SkillColors';
-import { getEmployees } from '../util/BlockchainHelper';
+import {web3, contractInstance} from '../approot';
+import { getEmployee1 } from '../util/BlockchainHelper';
+import { getEmployee2 } from '../util/BlockchainHelper';
+import { getEmployee3 } from '../util/BlockchainHelper';
+import { getEmployee1Reputation } from '../util/BlockchainHelper';
+
 
 
 export default class Home extends React.Component {
@@ -15,8 +20,8 @@ export default class Home extends React.Component {
             data: [
                 {
                     name: 'Michelle Bachler',
-                    address: 1,
-                    tokens: 100,
+                    address: 0,
+                    tokens: 0,
                     skills: [
                         {
                             displayName: 'Communication',
@@ -46,7 +51,7 @@ export default class Home extends React.Component {
                 },
                 {
                     name: 'James Green',
-                    address: 2,
+                    address: 1,
                     tokens: 200,
                     skills: [
                         {
@@ -77,7 +82,7 @@ export default class Home extends React.Component {
                 },
                 {
                     name: 'Kevin Quick',
-                    address: 3,
+                    address: 2,
                     tokens: 200,
                     skills: [
                         {
@@ -114,8 +119,41 @@ export default class Home extends React.Component {
         this.initializeSelectedValues();
     }
 
+    callbackEmployee1 = (error, returnValues) =>
+    {  
+        var stateTemp = this.state.data;
+        stateTemp[0].tokens =returnValues[2].c[0];
+        this.setState({data:stateTemp});
+        console.log(this.state.data[0].tokens)    
+    }
+    callbackEmployee2 = (error, returnValues) =>
+    {       
+        var stateTemp = this.state.data;
+        stateTemp[1].tokens = returnValues[2].c[0];
+        this.state.data = stateTemp;
+        console.log(this.state.data[1].tokens)      
+    }
+    callbackEmployee3 = (error, returnValues) =>
+    {       
+        var stateTemp = this.state.data;
+        stateTemp[2].tokens = returnValues[2].c[0];
+        this.state.data = stateTemp;
+        console.log(this.state.data[2].tokens)      
+    }
+    callbackEmployee1Rep = (error, returnValues) =>
+    { 
+        var stateTemp = this.state.data;
+        console.log(stateTemp[0].skills[0].value);
+        stateTemp[0].skills[0].value = returnValues[0].c[0];
+        console.log(stateTemp[0].skills[0].value);
+        this.state.data = stateTemp;
+    }
+
     componentWillMount() {
-        getEmployees();
+        getEmployee1(this.callbackEmployee1);
+        getEmployee2(this.callbackEmployee2);
+        getEmployee3(this.callbackEmployee3);
+        getEmployee1Reputation(this.callbackEmployee1Rep);
     }
 
     initializeSelectedValues() {
@@ -197,6 +235,29 @@ export default class Home extends React.Component {
     }
 
     handleSend(fromAddress, details) {
+        var from = web3.eth.accounts[fromAddress];
+        console.log(from);
+        var to = web3.eth.accounts[details.toAddress];
+        console.log(to);
+        if(details.skill == "Communication")      
+        contractInstance.transferCommunicationPoints(parseInt(from),parseInt(to),details.repCount);
+       else if(details.skill == "Collaboration") 
+        { 
+             contractInstance.transferCollaborationPoints(parseInt(web3.eth.accounts[0]),parseInt(web3.eth.accounts[1]),details.repCount);
+            // var stateTemp = this.state.data;
+            // var tokenremain = contractInstance.getBalance(parseInt(from));
+            //  console.log(tokenremain);
+            // stateTemp[2].tokens = tokenremain[0].c[0];
+            // this.state.data = stateTemp;
+        }
+       else if(details.skill == "Organisation") 
+        contractInstance.transferOrganisationPoints(parseInt(from),parseInt(to),details.repCount);
+        else if(details.skill == "Ethics") 
+        contractInstance.transferEthicsPoints(parseInt(from),parseInt(to),details.repCount);
+        else if(details.skill == "Problem Solving") 
+        contractInstance.transferProblemSolvingPoints(parseInt(from),parseInt(to),details.repCount);
+        else if(details.skill == "Engagement") 
+        contractInstance.transferEngagementPoints(parseInt(from),parseInt(to),details.repCount);
         console.log({
             ...details,
             fromAddress

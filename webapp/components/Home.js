@@ -9,10 +9,13 @@ import { getEmployee1 } from '../util/BlockchainHelper';
 import { getEmployee2 } from '../util/BlockchainHelper';
 import { getEmployee3 } from '../util/BlockchainHelper';
 import { getEmployee1Reputation } from '../util/BlockchainHelper';
+import { getEmployee2Reputation } from '../util/BlockchainHelper';
+import { getEmployee3Reputation } from '../util/BlockchainHelper';
 
 
 
-export default class Home extends React.Component {
+export default class Home extends React.Component
+ {
     
     constructor(props) {
         super(props);
@@ -120,40 +123,66 @@ export default class Home extends React.Component {
     }
 
     callbackEmployee1 = (error, returnValues) =>
-    {  
-        var stateTemp = this.state.data;
-        stateTemp[0].tokens =returnValues[2].c[0];
-        this.setState({data:stateTemp});
-        console.log(this.state.data[0].tokens)    
+    {   
+       var stateTemp = this.state.data;
+       stateTemp[0].tokens =returnValues.c[0];  
+       this.setState({data:stateTemp});         
     }
     callbackEmployee2 = (error, returnValues) =>
-    {       
-        var stateTemp = this.state.data;
-        stateTemp[1].tokens = returnValues[2].c[0];
-        this.state.data = stateTemp;
-        console.log(this.state.data[1].tokens)      
+    {   
+         var stateTemp = this.state.data;
+        stateTemp[1].tokens =returnValues.c[0];  
+        this.setState({data:stateTemp});       
     }
     callbackEmployee3 = (error, returnValues) =>
     {       
         var stateTemp = this.state.data;
-        stateTemp[2].tokens = returnValues[2].c[0];
-        this.state.data = stateTemp;
-        console.log(this.state.data[2].tokens)      
+        stateTemp[2].tokens =returnValues.c[0];  
+        this.setState({data:stateTemp});       
     }
     callbackEmployee1Rep = (error, returnValues) =>
     { 
-        var stateTemp = this.state.data;
-        console.log(stateTemp[0].skills[0].value);
-        stateTemp[0].skills[0].value = returnValues[0].c[0];
-        console.log(stateTemp[0].skills[0].value);
-        this.state.data = stateTemp;
+        var stateTemp = this.state.data;   
+        stateTemp[0].skills[0].value = returnValues[0].c[0];   
+        stateTemp[0].skills[1].value = returnValues[1].c[0];
+        stateTemp[0].skills[2].value = returnValues[2].c[0];
+        stateTemp[0].skills[3].value = returnValues[3].c[0];
+        stateTemp[0].skills[4].value = returnValues[4].c[0];
+        stateTemp[0].skills[5].value = returnValues[5].c[0];   
+        this.setState({data:stateTemp});
     }
 
-    componentWillMount() {
+    callbackEmployee2Rep = (error, returnValues) =>
+    { 
+        var stateTemp = this.state.data;   
+        stateTemp[1].skills[0].value = returnValues[0].c[0];   
+        stateTemp[1].skills[1].value = returnValues[1].c[0];
+        stateTemp[1].skills[2].value = returnValues[2].c[0];
+        stateTemp[1].skills[3].value = returnValues[3].c[0];
+        stateTemp[1].skills[4].value = returnValues[4].c[0];
+        stateTemp[1].skills[5].value = returnValues[5].c[0];   
+        this.setState({data:stateTemp});
+    }
+
+    callbackEmployee3Rep = (error, returnValues) =>
+    { 
+        var stateTemp = this.state.data;   
+        stateTemp[2].skills[0].value = returnValues[0].c[0];   
+        stateTemp[2].skills[1].value = returnValues[1].c[0];
+        stateTemp[2].skills[2].value = returnValues[2].c[0];
+        stateTemp[2].skills[3].value = returnValues[3].c[0];
+        stateTemp[2].skills[4].value = returnValues[4].c[0];
+        stateTemp[2].skills[5].value = returnValues[5].c[0];   
+        this.setState({data:stateTemp});
+    }
+
+    componentWillMount() {      
         getEmployee1(this.callbackEmployee1);
         getEmployee2(this.callbackEmployee2);
         getEmployee3(this.callbackEmployee3);
         getEmployee1Reputation(this.callbackEmployee1Rep);
+        getEmployee2Reputation(this.callbackEmployee2Rep);
+        getEmployee3Reputation(this.callbackEmployee3Rep);
     }
 
     initializeSelectedValues() {
@@ -174,11 +203,12 @@ export default class Home extends React.Component {
         }
     }
 
-    renderSkills(skills, address) {
+    renderSkills(skills, address) {       
         return (
             <Row style={{marginLeft: 6}}>
                 {
                     skills.map(skill => (
+                        
                         <Chip
                             backgroundColor= {SkillColors[skill.displayName]}
                             labelColor='#FFF'
@@ -194,7 +224,7 @@ export default class Home extends React.Component {
     }
 
     renderSkillsMenu(memberAddress) {
-        const skills = ['Communication', 'Collaboration', 'Organisation', 'Ethics', 'Problem Solving', 'Engagemnent'];
+        const skills = ['Communication', 'Collaboration', 'Organisation', 'Ethics', 'Problem Solving', 'Engagement'];
         return skills.map(skill => (
             <MenuItem
                 key={`${memberAddress}_${skill}`}
@@ -234,35 +264,65 @@ export default class Home extends React.Component {
         this.setState({selectedValues});
     }
 
-    handleSend(fromAddress, details) {
-        var from = web3.eth.accounts[fromAddress];
-        console.log(from);
+    handleSend(fromAddress, details) {  
+        // ToDo engagement not working;
+        var fromAcc = web3.eth.accounts[fromAddress];       
         var to = web3.eth.accounts[details.toAddress];
-        console.log(to);
-        if(details.skill == "Communication")      
-        contractInstance.transferCommunicationPoints(parseInt(from),parseInt(to),details.repCount);
+    
+        var stateTemp = this.state.data;
+      
+        if(details.skill == "Communication")   
+        {   
+            contractInstance.transferCommunicationPoints(parseInt(fromAcc),parseInt(to),details.repCount, {from:fromAcc, gas:3000000});
+            var tokenremain = contractInstance.getBalance(parseInt(fromAcc));
+            stateTemp[fromAddress].tokens = tokenremain.c[0];
+            var skillNewCount = contractInstance.getCommunicationPoints(parseInt(to));
+            stateTemp[details.toAddress].skills[0].value = skillNewCount.c[0];
+        }
        else if(details.skill == "Collaboration") 
         { 
-             contractInstance.transferCollaborationPoints(parseInt(web3.eth.accounts[0]),parseInt(web3.eth.accounts[1]),details.repCount);
-            // var stateTemp = this.state.data;
-            // var tokenremain = contractInstance.getBalance(parseInt(from));
-            //  console.log(tokenremain);
-            // stateTemp[2].tokens = tokenremain[0].c[0];
-            // this.state.data = stateTemp;
+             contractInstance.transferCollaborationPoints(parseInt(fromAcc),parseInt(to),details.repCount, {from:fromAcc, gas:47000});
+             var tokenremain = contractInstance.getBalance(parseInt(fromAcc));
+             stateTemp[fromAddress].tokens = tokenremain.c[0];
+             var skillNewCount = contractInstance.getCollaborationPoints(parseInt(to));
+             stateTemp[details.toAddress].skills[1].value = skillNewCount.c[0];
         }
        else if(details.skill == "Organisation") 
-        contractInstance.transferOrganisationPoints(parseInt(from),parseInt(to),details.repCount);
+        {
+            contractInstance.transferOrganisationPoints(parseInt(fromAcc),parseInt(to),details.repCount, {from:fromAcc, gas:47000});
+            var tokenremain = contractInstance.getBalance(parseInt(fromAcc));
+            stateTemp[fromAddress].tokens = tokenremain.c[0];
+            var skillNewCount = contractInstance.getOrganisationPoints(parseInt(to));
+            stateTemp[details.toAddress].skills[2].value = skillNewCount.c[0];
+        }
         else if(details.skill == "Ethics") 
-        contractInstance.transferEthicsPoints(parseInt(from),parseInt(to),details.repCount);
+        {
+            contractInstance.transferEthicsPoints(parseInt(fromAcc),parseInt(to),details.repCount, {from:fromAcc, gas:47000});
+            var tokenremain = contractInstance.getBalance(parseInt(fromAcc));
+            stateTemp[fromAddress].tokens = tokenremain.c[0];
+            var skillNewCount = contractInstance.getEthicsPoints(parseInt(to));
+            stateTemp[details.toAddress].skills[3].value = skillNewCount.c[0];
+        }
         else if(details.skill == "Problem Solving") 
-        contractInstance.transferProblemSolvingPoints(parseInt(from),parseInt(to),details.repCount);
+        {
+            contractInstance.transferProblemSolvingPoints(parseInt(fromAcc),parseInt(to),details.repCount, {from:fromAcc, gas:47000});
+            var tokenremain = contractInstance.getBalance(parseInt(fromAcc));
+            stateTemp[fromAddress].tokens = tokenremain.c[0];
+            var skillNewCount = contractInstance.getProblemSolvingPoints(parseInt(to));
+            stateTemp[details.toAddress].skills[4].value = skillNewCount.c[0];
+        }
         else if(details.skill == "Engagement") 
-        contractInstance.transferEngagementPoints(parseInt(from),parseInt(to),details.repCount);
-        console.log({
-            ...details,
-            fromAddress
-        });
+        {
+            contractInstance.transferEngagementPoints(parseInt(fromAcc),parseInt(to),details.repCount, {from:fromAcc, gas:3000000});
+            var tokenremain = contractInstance.getBalance(parseInt(fromAcc));
+            stateTemp[fromAddress].tokens = tokenremain.c[0];           
+            var skillNewCount = contractInstance.getEngagementPoints(parseInt(to));            
+            stateTemp[details.toAddress].skills[5].value = skillNewCount.c[0]; 
+        }
+        this.setState({data:stateTemp});       
     }
+
+   
 
     renderMembers(members) {
         return members.map(member => (
